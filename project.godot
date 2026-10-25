@@ -10,13 +10,15 @@ config_version=5
 
 [application]
 
-config/name="New Game Tutorial"
+config/name="Salon Game"
+config/description="A Game made for Salon"
 run/main_scene="uid://tgf1ktngoopb"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [display]
 
+window/size/mode=3
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/stretch/scale_mode="integer"

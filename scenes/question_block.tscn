@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://dwlrf4dfealho"]
+
+[ext_resource type="Texture2D" uid="uid://c4fcb3tfldhub" path="res://assets/sprites/world_tileset.png" id="1_eig7x"]
+[ext_resource type="Script" uid="uid://cbctgvwpehc5n" path="res://scripts/question_block.gd" id="2_o0dtl"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o0dtl"]
+atlas = ExtResource("1_eig7x")
+region = Rect2(0, 32, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ydts5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o0dtl")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3oml4"]
+size = Vector2(14, 14)
+
+[node name="QuestionBlock" type="Area2D" unique_id=1928717315]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1570383228]
+sprite_frames = SubResource("SpriteFrames_ydts5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=487070840]
+shape = SubResource("RectangleShape2D_3oml4")
+script = ExtResource("2_o0dtl")
+
+[node name="Timer" type="Timer" parent="." unique_id=553182145]
+wait_time = 2.5
+one_shot = true
+
+[connection signal="body_entered" from="." to="CollisionShape2D" method="_on_area_2d_body_entered"]
+[connection signal="timeout" from="Timer" to="CollisionShape2D" method="_on_timer_timeout"]

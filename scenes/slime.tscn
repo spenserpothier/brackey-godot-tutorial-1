@@ -49,7 +49,7 @@ script = ExtResource("1_n6pvg")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=418782377]
 sprite_frames = SubResource("SpriteFrames_v5wyi")
 autoplay = "default"
-frame_progress = 0.5801898
+frame_progress = 0.2779877
 
 [node name="killzone" parent="." unique_id=1890524561 instance=ExtResource("2_n6pvg")]
 
