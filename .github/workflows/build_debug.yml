@@ -1,0 +1,51 @@
+name: Build Godot Application
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            target: windows
+            build_script: |
+              cd %GITHUB_WORKSPACE%
+              godot --export "Windows Desktop" build/windows/debug.exe
+          - os: macos-latest
+            target: macos
+            build_script: |
+              cd %GITHUB_WORKSPACE%
+              godot --export "OSX" build/macos/debug.zip
+          - os: ubuntu-latest
+            target: android
+            build_script: |
+              cd %GITHUB_WORKSPACE%
+              godot --export "Android" build/android/debug.apk
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Godot
+        run: |
+          # Install Godot using the official releases
+          curl -L -o godot.zip https://github.com/godotengine/godot/releases/download/4.2.1-stable/Godot_v4.2.1-stable_win64.exe
+          unzip godot.zip
+          mv Godot_v4.2.1-stable_win64.exe godot.exe
+
+      - name: Build Project
+        run: ${{ matrix.build_script }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-${{ matrix.target }}
+          path: build/${{ matrix.target }}/*
+
