@@ -9,45 +9,57 @@ on:
 
 jobs:
   build:
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
         include:
           - os: windows-latest
             target: windows
-            build_script: |
-              cd %GITHUB_WORKSPACE%
-              godot --export "Windows Desktop" build/windows/debug.exe
+            export_name: "Windows Desktop"
+            output_path: build/windows/debug.exe
+            artifact_name: windows-debug
+
           - os: macos-latest
             target: macos
-            build_script: |
-              cd %GITHUB_WORKSPACE%
-              godot --export "OSX" build/macos/debug.zip
+            export_name: "macOS"
+            output_path: build/macos/debug.zip
+            artifact_name: macos-debug
+
           - os: ubuntu-latest
             target: android
-            build_script: |
-              cd %GITHUB_WORKSPACE%
-              godot --export "Android" build/android/debug.apk
+            export_name: "Android"
+            output_path: build/android/debug.apk
+            artifact_name: android-debug
 
-    runs-on: ${{ matrix.os }}
-    
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Godot
-        run: |
-          # Install Godot using the official releases
-          curl -L -o godot.zip https://github.com/godotengine/godot/releases/download/4.2.1-stable/Godot_v4.2.1-stable_win64.exe
-          unzip godot.zip
-          mv Godot_v4.2.1-stable_win64.exe godot.exe
+        uses: chickensoftgames/setup-godot@v1
+        with:
+          version: 4.2.1
+          include_templates: true
+
+      - name: Setup Java
+        if: matrix.target == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        if: matrix.target == 'android'
+        uses: android-actions/setup-android@v3
 
       - name: Build Project
-        run: ${{ matrix.build_script }}
+        shell: bash
+        run: |
+          godot --headless --export "${{ matrix.export_name }}" "${{ matrix.output_path }}"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.target }}
-          path: build/${{ matrix.target }}/*
-
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.output_path }}
